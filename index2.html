@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Garderoben</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream:      #FFF8F4;
+            --blush:      #FAE0EC;
+            --rose:       #F0A8C0;
+            --rose-dark:  #C47090;
+            --mauve:      #8B5070;
+            --lavender:   #E2D4F8;
+            --lav-dark:   #9878CC;
+            --mint:       #C8F0DC;
+            --gold:       #E8C870;
+            --text:       #3D2040;
+            --text-mid:   #6B4060;
+            --text-light: #AA80A0;
+            --border:     rgba(180,120,150,0.22);
+            --shadow:     rgba(80,30,60,0.10);
+            --white:      #FFFFFF;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── WARDROBE ENTRANCE ──────────────────────────── */
+        #entrance {
+            position: fixed; inset: 0; z-index: 1000;
+            display: flex;
+            perspective: 1400px;
+            cursor: pointer;
+            background: #3D1C2A;
+        }
+
+        .door {
+            width: 50%; height: 100%;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 1.3s cubic-bezier(0.42, 0, 0.18, 1);
+            overflow: hidden;
+        }
+
+        .door::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 28px),
+                linear-gradient(160deg, #F0C8A8 0%, #DCA880 30%, #C49060 60%, #B07840 100%);
+        }
+
+        .door::after {
+            content: '';
+            position: absolute;
+            inset: 24px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-radius: 2px;
+            box-shadow: inset 0 0 0 14px rgba(255,255,255,0.06);
+        }
+
+        .door-left  { transform-origin: left center;  border-right: 5px solid var(--gold); }
+        .door-right { transform-origin: right center; border-left: 5px solid var(--gold); }
+
+        .door-knob {
+            position: absolute;
+            width: 16px; height: 80px;
+            background: linear-gradient(135deg, #F0D080, #C0A040);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        .door-left  .door-knob { right: 22px; }
+        .door-right .door-knob { left: 22px; }
+
+        .entrance-label {
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            color: rgba(255,255,255,0.6);
+            bottom: 38%;
+            z-index: 2;
+        }
+
+        #entrance.open .door-left  { transform: rotateY(-118deg); }
+        #entrance.open .door-right { transform: rotateY(118deg); }
+
+        /* ─── APP SHELL ──────────────────────────────────── */
+        #app { max-width: 1080px; margin: 0 auto; padding: 0 20px 60px; }
+
+        .app-header { text-align: center; padding: 32px 0 18px; }
+        .app-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            color: var(--mauve);
+            letter-spacing: 0.04em;
+        }
+        .app-header p {
+            color: var(--text-light);
+            font-size: 0.78rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* ─── NAV ────────────────────────────────────────── */
+        .nav {
+            display: flex; gap: 6px;
+            background: var(--white);
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 22px var(--shadow);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .nav::-webkit-scrollbar { display: none; }
+
+        .nav-btn {
+            flex: 1; min-width: 90px;
+            padding: 10px 10px 8px;
+            border: none;
+            background: transparent;
+            border-radius: 13px;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-mid);
+            transition: all 0.25s;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+        }
+        .nav-btn span { display: block; font-size: 1.35rem; margin-bottom: 3px; }
+        .nav-btn:hover { background: var(--blush); }
+        .nav-btn.active { background: var(--rose); color: var(--white); box-shadow: 0 4px 12px rgba(200,100,140,0.3); }
+
+        /* ─── SECTIONS ───────────────────────────────────── */
+        .section { display: none; animation: fadeUp 0.35s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-hdr {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .section-hdr h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.9rem;
+            color: var(--mauve);
+        }
+
+        /* ─── BUTTONS ────────────────────────────────────── */
+        .btn-primary {
+            background: var(--rose); color: #fff;
+            border: none; padding: 11px 22px;
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700;
+            cursor: pointer; transition: all 0.22s;
+        }
+        .btn-primary:hover { background: var(--rose-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(180,80,110,0.25); }
+
+        .btn-secondary {
+            background: var(--blush); color: var(--mauve);
+            border: none; padding: 11px 22px;
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700;
+            cursor: pointer; transition: all 0.22s;
+        }
+        .btn-secondary:hover { background: var(--lavender); }
+
+        .btn-icon {
+            background: var(--blush); color: var(--mauve);
+            border: none; width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer; font-size: 1rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { background: var(--rose); color: #fff; }
+
+        /* ─── CATEGORY TABS ──────────────────────────────── */
+        .cat-tabs { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+
+        .cat-tab {
+            padding: 5px 15px;
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.78rem; font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-mid);
+            transition: all 0.2s;
+        }
+        .cat-tab.active { background: var(--lavender); border-color: var(--lav-dark); color: var(--mauve); }
+        .cat-tab:hover:not(.active) { background: var(--blush); }
+
+        /* ─── CLOTHES GRID ───────────────────────────────── */
+        .clothes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 14px;
+        }
+
+        .clothing-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .clothing-card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px var(--shadow); }
+
+        .clothing-card img {
+            width: 100%; aspect-ratio: 1;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--blush);
+        }
+
+        .card-name { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-top: 7px; }
+        .card-cat  { font-size: 0.7rem; color: var(--text-light); margin-top: 1px; }
+        .card-worn { font-size: 0.65rem; color: var(--text-light); margin-top: 2px; }
+
+        .card-badge {
+            display: inline-block;
+            font-size: 0.62rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 8px;
+            background: var(--lavender); color: var(--mauve);
+            margin-top: 4px;
+        }
+
+        .fav-btn {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(255,255,255,0.92);
+            border: none; border-radius: 50%;
+            width: 28px; height: 28px;
+            cursor: pointer; font-size: 0.82rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+        .fav-btn:hover { transform: scale(1.25); }
+
+        .card-delete {
+            position: absolute; top: 8px; left: 8px;
+            background: rgba(255,255,255,0.92);
+            border: none; border-radius: 50%;
+            width: 26px; height: 26px;
+            cursor: pointer; font-size: 0.7rem; color: var(--rose-dark);
+            display: none; align-items: center; justify-content: center;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+        .clothing-card:hover .card-delete { display: flex; }
+
+        .add-card {
+            border: 2px dashed var(--rose);
+            border-radius: 16px;
+            background: var(--blush);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            aspect-ratio: 1;
+            cursor: pointer;
+            min-height: 155px;
+            transition: all 0.22s;
+        }
+        .add-card:hover { background: rgba(240,168,192,0.4); border-color: var(--rose-dark); }
+        .add-card .add-icon { font-size: 2.2rem; color: var(--rose); transition: color 0.2s; line-height: 1; }
+        .add-card .add-txt  { font-size: 0.72rem; font-weight: 700; color: var(--text-light); margin-top: 7px; transition: color 0.2s; }
+        .add-card:hover .add-icon,
+        .add-card:hover .add-txt  { color: var(--rose-dark); }
+
+        /* ─── CALENDAR ───────────────────────────────────── */
+        .cal-hdr {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .cal-month {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic; font-size: 1.75rem;
+            color: var(--mauve);
+        }
+        .cal-nav {
+            background: var(--blush); border: none;
+            border-radius: 50%; width: 36px; height: 36px;
+            cursor: pointer; font-size: 1rem; color: var(--mauve);
+            transition: all 0.2s;
+        }
+        .cal-nav:hover { background: var(--rose); color: #fff; }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .cal-name {
+            text-align: center; font-size: 0.68rem; font-weight: 800;
+            color: var(--text-light); text-transform: uppercase;
+            letter-spacing: 0.08em; padding: 8px 0;
+        }
+
+        .cal-day {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 7px;
+            min-height: 68px;
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            transition: all 0.18s;
+            position: relative;
+        }
+        .cal-day:hover { border-color: var(--rose); background: var(--blush); }
+        .cal-day.empty  { background: transparent; border-color: transparent; cursor: default; }
+        .cal-day.today  { border-color: var(--rose); background: rgba(240,168,192,0.12); }
+        .cal-day.has-outfit { border-color: var(--lav-dark); }
+
+        .cal-num { font-size: 0.77rem; font-weight: 800; color: var(--text-mid); }
+        .today .cal-num { color: var(--rose-dark); }
+
+        .cal-thumbs { display: flex; gap: 2px; flex-wrap: wrap; margin-top: 4px; }
+        .cal-thumb  { width: 19px; height: 19px; border-radius: 4px; object-fit: cover; }
+
+        /* ─── SHUFFLE ────────────────────────────────────── */
+        .shuffle-wrap { text-align: center; padding: 20px 0; }
+
+        .shuffle-btn {
+            background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+            color: #fff; border: none;
+            padding: 14px 38px; border-radius: 50px;
+            font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800;
+            cursor: pointer; transition: all 0.28s;
+            letter-spacing: 0.05em;
+            box-shadow: 0 6px 20px rgba(200,100,130,0.35);
+        }
+        .shuffle-btn:hover { transform: scale(1.06); box-shadow: 0 8px 26px rgba(200,100,130,0.45); }
+
+        .shuffle-row {
+            display: flex; gap: 14px;
+            justify-content: center; flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .shuffle-item { text-align: center; }
+        .shuffle-item img {
+            width: 130px; height: 130px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: var(--blush);
+            border: 3px solid var(--gold);
+            opacity: 0;
+            animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        .shuffle-item p { font-size: 0.72rem; color: var(--text-light); margin-top: 5px; }
+
+        @keyframes popIn {
+            from { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+            to   { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .shuffle-save-row {
+            display: none;
+            gap: 10px; justify-content: center; align-items: center;
+            margin-top: 18px;
+        }
+
+        /* ─── MOODBOARD ──────────────────────────────────── */
+        .boards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .board-card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .board-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px var(--shadow); }
+
+        .board-preview {
+            height: 126px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 2px; overflow: hidden;
+        }
+        .board-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+        .board-info { padding: 11px; }
+        .board-name  { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+        .board-count { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; }
+
+        /* Board Editor */
+        #board-editor { display: none; }
+        #board-editor.show { display: block; }
+
+        .board-canvas {
+            min-height: 340px;
+            border-radius: 16px;
+            border: 2px dashed var(--border);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background: var(--blush);
+        }
+
+        .board-canvas img {
+            position: absolute;
+            cursor: move;
+            border-radius: 8px;
+            user-select: none;
+            -webkit-user-drag: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transition: box-shadow 0.15s;
+        }
+        .board-canvas img:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.2); }
+
+        .board-item-del {
+            position: absolute;
+            width: 22px; height: 22px;
+            background: rgba(200,80,100,0.9); color: #fff;
+            border: none; border-radius: 50%;
+            font-size: 0.65rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10; transition: background 0.2s;
+        }
+        .board-item-del:hover { background: rgba(180,50,70,1); }
+
+        /* ─── PACK LIST ──────────────────────────────────── */
+        .trips-col { display: flex; flex-direction: column; gap: 11px; }
+
+        .trip-card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .trip-card:hover { border-color: var(--rose); box-shadow: 0 5px 18px var(--shadow); }
+
+        .trip-name  { font-weight: 700; color: var(--text); font-size: 1rem; }
+        .trip-dates { font-size: 0.78rem; color: var(--text-light); margin-top: 3px; }
+
+        .progress-bar { height: 6px; background: var(--blush); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--mint), #7dd8a0); border-radius: 3px; transition: width 0.4s; }
+
+        .pack-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .pack-item img {
+            width: 46px; height: 46px;
+            object-fit: contain; border-radius: 9px;
+            background: var(--blush); flex-shrink: 0;
+        }
+        .pack-item-name { flex: 1; font-size: 0.88rem; }
+        .pack-check { width: 18px; height: 18px; cursor: pointer; accent-color: var(--rose); flex-shrink: 0; }
+        .pack-remove {
+            background: none; border: none; cursor: pointer;
+            color: var(--text-light); font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .pack-remove:hover { color: var(--rose-dark); }
+
+        /* ─── MODALS ─────────────────────────────────────── */
+        .overlay {
+            position: fixed; inset: 0;
+            background: rgba(50,20,40,0.52);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(5px);
+        }
+        .overlay.hidden { display: none; }
+
+        .modal {
+            background: var(--cream);
+            border-radius: 22px;
+            padding: 26px;
+            max-width: 540px; width: 100%;
+            max-height: 92vh; overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic; font-size: 1.75rem;
+            color: var(--mauve); margin-bottom: 18px;
+        }
+
+        .close-btn {
+            position: absolute; top: 14px; right: 14px;
+            background: var(--blush); border: none; border-radius: 50%;
+            width: 30px; height: 30px; cursor: pointer;
+            font-size: 0.95rem; color: var(--mauve);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-btn:hover { background: var(--rose); color: #fff; }
+
+        /* ─── FORM ───────────────────────────────────────── */
+        .form-grp { margin-bottom: 14px; }
+
+        label {
+            display: block;
+            font-size: 0.75rem; font-weight: 800;
+            color: var(--text-mid);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%; padding: 10px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: var(--white);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.88rem; color: var(--text);
+            outline: none; transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--rose); }
+
+        /* ─── UPLOAD ─────────────────────────────────────── */
+        .upload-area {
+            border: 2px dashed var(--rose);
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+            cursor: pointer;
+            background: var(--blush);
+            transition: all 0.2s;
+        }
+        .upload-area:hover { background: rgba(240,168,192,0.35); border-color: var(--rose-dark); }
+
+        .checkerboard-bg {
+            background-image:
+                linear-gradient(45deg, #ddd 25%, transparent 25%),
+                linear-gradient(-45deg, #ddd 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ddd 75%),
+                linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-size: 12px 12px;
+            background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+            border-radius: 10px;
+        }
+
+        #bgCanvas {
+            display: none; max-width: 100%;
+            max-height: 200px; width: auto;
+            border-radius: 10px; margin: 0 auto; display: none;
+        }
+
+        /* ─── SELECTION GRID ─────────────────────────────── */
+        .sel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+            gap: 8px;
+            max-height: 310px; overflow-y: auto;
+            padding: 4px;
+        }
+
+        .sel-item {
+            border: 2.5px solid transparent;
+            border-radius: 10px;
+            cursor: pointer; overflow: hidden;
+            transition: border-color 0.18s;
+            background: var(--blush);
+        }
+        .sel-item.selected { border-color: var(--rose); }
+        .sel-item img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; }
+        .sel-item span { font-size: 0.6rem; display: block; text-align: center; padding: 3px; color: var(--text-mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ─── TOAST ──────────────────────────────────────── */
+        #toast {
+            position: fixed; bottom: 22px; right: 22px;
+            background: var(--mauve); color: #fff;
+            padding: 11px 18px; border-radius: 12px;
+            font-size: 0.82rem; font-weight: 700;
+            z-index: 2000; pointer-events: none;
+            opacity: 0; transform: translateY(8px);
+            transition: all 0.28s;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── EMPTY STATES ───────────────────────────────── */
+        .empty-state {
+            text-align: center; padding: 36px 20px;
+            color: var(--text-light);
+        }
+        .empty-state .emo { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+        /* ─── RESPONSIVE ─────────────────────────────────── */
+        @media (max-width: 580px) {
+            .clothes-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .cal-day { min-height: 54px; }
+            .shuffle-item img { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══ WARDROBE ENTRANCE ══════════════════════════════ -->
+<div id="entrance" onclick="openWardrobe()">
+    <div class="door door-left">
+        <div class="door-knob"></div>
+        <span class="entrance-label">Tryck för att öppna</span>
+    </div>
+    <div class="door door-right">
+        <div class="door-knob"></div>
+    </div>
+</div>
+
+<!-- ══ MAIN APP ═══════════════════════════════════════ -->
+<div id="app">
+
+    <div class="app-header">
+        <h1>Garderoben</h1>
+        <p>din digitala klädkammare</p>
+    </div>
+
+    <nav class="nav">
+        <button class="nav-btn active" onclick="showSection('clothes')"><span>👗</span>Kläder</button>
+        <button class="nav-btn"        onclick="showSection('calendar')"><span>📅</span>Kalender</button>
+        <button class="nav-btn"        onclick="showSection('shuffle')"><span>🎲</span>Shuffle</button>
+        <button class="nav-btn"        onclick="showSection('moodboard')"><span>🎨</span>Moodboard</button>
+        <button class="nav-btn"        onclick="showSection('packlist')"><span>🧳</span>Packlista</button>
+    </nav>
+
+    <!-- ── KLÄDER ──────────────────────────────────── -->
+    <section id="clothes" class="section active">
+        <div class="section-hdr">
+            <h2>Mina Kläder</h2>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <select id="sortSelect" onchange="renderClothes()" style="width:auto;font-size:0.78rem;padding:7px 10px;">
+                    <option value="added">Nyast</option>
+                    <option value="worn">Sist använd</option>
+                    <option value="fav">Favoriter</option>
+                    <option value="az">A–Ö</option>
+                </select>
+            </div>
+        </div>
+        <div class="cat-tabs" id="catTabs"></div>
+        <div class="clothes-grid" id="clothesGrid"></div>
+    </section>
+
+    <!-- ── KALENDER ────────────────────────────────── -->
+    <section id="calendar" class="section">
+        <div class="cal-hdr">
+            <button class="cal-nav" onclick="changeMonth(-1)">←</button>
+            <div class="cal-month" id="calTitle"></div>
+            <button class="cal-nav" onclick="changeMonth(1)">→</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+    </section>
+
+    <!-- ── SHUFFLE ─────────────────────────────────── -->
+    <section id="shuffle" class="section">
+        <div class="section-hdr"><h2>Slumpa Outfit</h2></div>
+        <div class="shuffle-wrap">
+            <button class="shuffle-btn" onclick="doShuffle()">✨ Generera look</button>
+            <div class="shuffle-row" id="shuffleRow"></div>
+            <div class="shuffle-save-row" id="shuffleSaveRow">
+                <input type="date" id="shuffleDate" style="width:auto;">
+                <button class="btn-primary" onclick="saveShuffledOutfit()">Spara i Kalender</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── MOODBOARD ───────────────────────────────── -->
+    <section id="moodboard" class="section">
+        <div id="boards-overview">
+            <div class="section-hdr">
+                <h2>Moodboards</h2>
+                <button class="btn-primary" onclick="openModal('createBoardModal')">+ Ny board</button>
+            </div>
+            <div class="boards-grid" id="boardsGrid"></div>
+        </div>
+
+        <div id="board-editor">
+            <div class="section-hdr">
+                <button class="btn-secondary" onclick="closeBoardEditor()">← Tillbaka</button>
+                <h2 id="boardTitle">Board</h2>
+                <button class="btn-primary" onclick="saveBoard()">Spara ✓</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+                <label style="text-transform:none;margin:0;font-size:0.82rem;">Bakgrund:</label>
+                <input type="color" id="boardBgPicker" value="#FAE0EC" oninput="updateBoardBg(this.value)"
+                    style="width:40px;height:34px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px;">
+                <button class="btn-secondary" onclick="openAddToBoardModal()" style="font-size:0.78rem;padding:8px 14px;">+ Lägg till plagg</button>
+                <button class="btn-secondary" onclick="downloadBoard()" style="font-size:0.78rem;padding:8px 14px;">⬇ Ladda ner</button>
+            </div>
+            <div class="board-canvas checkerboard-bg" id="boardCanvas"></div>
+        </div>
+    </section>
+
+    <!-- ── PACKLISTA ────────────────────────────────── -->
+    <section id="packlist" class="section">
+        <div id="trips-overview">
+            <div class="section-hdr">
+                <h2>Packlistor</h2>
+                <button class="btn-primary" onclick="openModal('createTripModal')">+ Ny resa</button>
+            </div>
+            <div class="trips-col" id="tripsList"></div>
+        </div>
+
+        <div id="trip-editor" style="display:none;">
+            <div class="section-hdr">
+                <button class="btn-secondary" onclick="closeTripEditor()">← Tillbaka</button>
+                <h2 id="tripTitle">Resa</h2>
+                <button class="btn-primary" onclick="openAddToPackModal()">+ Lägg till</button>
+            </div>
+            <div id="packItemsContainer"></div>
+        </div>
+    </section>
+
+</div><!-- /#app -->
+
+<!-- ══ MODALS ═════════════════════════════════════════ -->
+
+<!-- Add Clothing -->
+<div id="addClothingModal" class="overlay hidden">
+    <div class="modal">
+        <button class="close-btn" onclick="closeModal('addClothingModal')">✕</button>
+        <div class="modal-title">Lägg till plagg</div>
+
+        <div class="form-grp">
+            <label>Foto</label>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="uploadArea">
+                <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
+                <div id="uploadPrompt">
+                    <div style="font-size:2.4rem;">📸</div>
+                    <p style="color:var(--text-mid);font-size:0.82rem;margin-top:8px;">Klicka för att välja bild</p>
+                    <p style="color:var(--text-light);font-size:0.72rem;margin-top:4px;">PNG, JPG, WEBP</p>
+                </div>
+                <canvas id="bgCanvas" class="checkerboard-bg"></canvas>
+            </div>
+        </div>
+
+        <!-- BG Removal controls -->
+        <div id="bgControls" style="display:none;margin-bottom:14px;background:var(--blush);border-radius:12px;padding:12px;">
+            <p style="font-size:0.75rem;font-weight:800;color:var(--text-mid);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Ta bort bakgrund</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+                <label style="text-transform:none;margin:0;font-size:0.8rem;">Bakgrundsfärg:</label>
+                <input type="color" id="bgColor" value="#ffffff"
+                    style="width:36px;height:30px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;padding:1px;">
+                <label style="text-transform:none;margin:0;font-size:0.8rem;">Tolerans:</label>
+                <input type="range" id="bgThresh" min="5" max="90" value="32" oninput="document.getElementById('threshVal').textContent=this.value" style="flex:1;min-width:80px;">
+                <span id="threshVal" style="font-size:0.8rem;min-width:28px;">32</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn-primary" onclick="applyBgRemoval()" style="font-size:0.78rem;padding:8px 14px;">Applicera</button>
+                <button class="btn-secondary" onclick="resetBg()" style="font-size:0.78rem;padding:8px 14px;">Återställ</button>
+            </div>
+        </div>
+
+        <div class="form-grp">
+            <label>Namn</label>
+            <input type="text" id="newName" placeholder="t.ex. Blå stickad tröja">
+        </div>
+
+        <div class="form-grp">
+            <label>Kategori</label>
+            <select id="newCat">
+                <option value="Tröja">Tröja</option>
+                <option value="Byxor">Byxor</option>
+                <option value="Klänning">Klänning</option>
+                <option value="Skor">Skor</option>
+                <option value="Jacka">Jacka</option>
+                <option value="Hoodie">Hoodie</option>
+                <option value="Hatt">Hatt &amp; Accessoarer</option>
+                <option value="Väska">Väska</option>
+                <option value="Övrigt">Övrigt</option>
+            </select>
+        </div>
+
+        <button class="btn-primary" onclick="saveClothing()" style="width:100%;">Spara plagg ✨</button>
+    </div>
+</div>
+
+<!-- Calendar Day -->
+<div id="calDayModal" class="overlay hidden">
+    <div class="modal">
+        <button class="close-btn" onclick="closeModal('calDayModal')">✕</button>
+        <div class="modal-title" id="calDayTitle">Outfit</div>
+        <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">Välj plaggen du ska ha på dig</p>
+        <div class="sel-grid" id="calSelGrid"></div>
+        <div class="form-grp" style="margin-top:14px;">
+            <label>Notering</label>
+            <textarea id="calNote" rows="2" placeholder="t.ex. Skoldag, Fest, Jobb..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="saveCalDay()" style="width:100%;margin-top:8px;">Spara</button>
+    </div>
+</div>
+
+<!-- Create Board -->
+<div id="createBoardModal" class="overlay hidden">
+    <div class="modal" style="max-width:380px;">
+        <button class="close-btn" onclick="closeModal('createBoardModal')">✕</button>
+        <div class="modal-title">Ny Moodboard</div>
+        <div class="form-grp">
+            <label>Namn</label>
+            <input type="text" id="newBoardName" placeholder="t.ex. Sommar Vibes">
+        </div>
+        <button class="btn-primary" onclick="createBoard()" style="width:100%;">Skapa</button>
+    </div>
+</div>
+
+<!-- Add to Board -->
+<div id="addToBoardModal" class="overlay hidden">
+    <div class="modal">
+        <button class="close-btn" onclick="closeModal('addToBoardModal')">✕</button>
+        <div class="modal-title">Lägg till plagg</div>
+        <div class="sel-grid" id="boardSelGrid"></div>
+        <button class="btn-primary" onclick="addItemsToBoard()" style="width:100%;margin-top:14px;">Lägg till</button>
+    </div>
+</div>
+
+<!-- Create Trip -->
+<div id="createTripModal" class="overlay hidden">
+    <div class="modal" style="max-width:380px;">
+        <button class="close-btn" onclick="closeModal('createTripModal')">✕</button>
+        <div class="modal-title">Ny Resa</div>
+        <div class="form-grp">
+            <label>Destination</label>
+            <input type="text" id="newTripDest" placeholder="t.ex. Paris ✈️">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="form-grp"><label>Från</label><input type="date" id="newTripFrom"></div>
+            <div class="form-grp"><label>Till</label><input type="date" id="newTripTo"></div>
+        </div>
+        <button class="btn-primary" onclick="createTrip()" style="width:100%;">Skapa</button>
+    </div>
+</div>
+
+<!-- Add to Pack -->
+<div id="addToPackModal" class="overlay hidden">
+    <div class="modal">
+        <button class="close-btn" onclick="closeModal('addToPackModal')">✕</button>
+        <div class="modal-title">Välj kläder</div>
+        <div class="sel-grid" id="packSelGrid"></div>
+        <button class="btn-primary" onclick="addItemsToPack()" style="width:100%;margin-top:14px;">Lägg till</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ══ SCRIPT ══════════════════════════════════════════ -->
+<script>
+/* ──── DATA ──────────────────────────────────────────── */
+let db = { clothes:[], calendar:{}, boards:[], trips:[] };
+
+function loadDB() {
+    try { const s = localStorage.getItem('garderob_v3'); if(s) db = JSON.parse(s); }
+    catch(e) {}
+}
+function saveDB() {
+    try { localStorage.setItem('garderob_v3', JSON.stringify(db)); }
+    catch(e) { toast('⚠️ Lagringen är full! Rensa gamla bilder.'); }
+}
+
+/* ──── UTILS ─────────────────────────────────────────── */
+function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2600);
+}
+function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+/* ──── ENTRANCE ──────────────────────────────────────── */
+function openWardrobe() {
+    const el = document.getElementById('entrance');
+    el.classList.add('open');
+    setTimeout(() => el.style.display = 'none', 1350);
+}
+
+/* ──── NAV ───────────────────────────────────────────── */
+const SECTIONS = ['clothes','calendar','shuffle','moodboard','packlist'];
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', SECTIONS[i]===id));
+    document.getElementById(id).classList.add('active');
+    if(id==='clothes')   renderClothes();
+    if(id==='calendar')  renderCalendar();
+    if(id==='moodboard') renderBoards();
+    if(id==='packlist')  renderTrips();
+}
+
+/* ──── CLOTHES ───────────────────────────────────────── */
+const ALL_CATS = ['Alla','Tröja','Byxor','Klänning','Skor','Jacka','Hoodie','Hatt','Väska','Övrigt'];
+let activeCat = 'Alla';
+
+function renderCatTabs() {
+    document.getElementById('catTabs').innerHTML = ALL_CATS.map(c =>
+        `<button class="cat-tab${c===activeCat?' active':''}" onclick="setcat('${c}')">${c}</button>`
+    ).join('');
+}
+
+function setcat(c) { activeCat = c; renderClothes(); }
+
+function sortedClothes() {
+    const sort = document.getElementById('sortSelect').value;
+    let list = activeCat==='Alla' ? [...db.clothes] : db.clothes.filter(c=>c.cat===activeCat);
+    if(sort==='fav') list.sort((a,b) => (b.fav?1:0)-(a.fav?1:0));
+    else if(sort==='az') list.sort((a,b) => (a.name||'').localeCompare(b.name||'','sv'));
+    else if(sort==='worn') list.sort((a,b) => (b.wornTs||0)-(a.wornTs||0));
+    return list;
+}
+
+function renderClothes() {
+    renderCatTabs();
+    const list = sortedClothes();
+    let html = `<div class="add-card" onclick="openAddModal()">
+        <div class="add-icon">+</div>
+        <div class="add-txt">Lägg till plagg</div>
+    </div>`;
+    list.forEach(item => {
+        const worn = item.wornDate || 'Aldrig';
+        html += `<div class="clothing-card">
+            <button class="card-delete btn-icon" onclick="deleteItem(${item.id})" title="Ta bort">✕</button>
+            <button class="fav-btn" onclick="toggleFav(${item.id})">${item.fav?'❤️':'🤍'}</button>
+            <img src="${item.img}" alt="${item.name}" loading="lazy" onclick="markWorn(${item.id})">
+            <div class="card-name">${item.name}</div>
+            <span class="card-badge">${item.cat}</span>
+            <div class="card-worn">Sist: ${worn}</div>
+        </div>`;
+    });
+    document.getElementById('clothesGrid').innerHTML = html;
+}
+
+function openAddModal() {
+    document.getElementById('uploadPrompt').style.display='block';
+    document.getElementById('bgCanvas').style.display='none';
+    document.getElementById('bgControls').style.display='none';
+    document.getElementById('fileInput').value='';
+    document.getElementById('newName').value='';
+    document.getElementById('newCat').value='Tröja';
+    _origData=null; _imgLoaded=false;
+    openModal('addClothingModal');
+}
+
+function toggleFav(id) {
+    const it = db.clothes.find(c=>c.id===id);
+    if(it) { it.fav=!it.fav; saveDB(); renderClothes(); }
+}
+
+function markWorn(id) {
+    const it = db.clothes.find(c=>c.id===id);
+    if(it) {
+        it.wornDate = new Date().toLocaleDateString('sv-SE');
+        it.wornTs = Date.now();
+        saveDB(); renderClothes();
+        toast(`${it.name} markeras som använd idag 👗`);
+    }
+}
+
+function deleteItem(id) {
+    if(!confirm('Ta bort detta plagg?')) return;
+    db.clothes = db.clothes.filter(c=>c.id!==id);
+    // Clean references
+    Object.keys(db.calendar).forEach(k => {
+        if(db.calendar[k].items) db.calendar[k].items = db.calendar[k].items.filter(i=>i!==id);
+    });
+    db.boards.forEach(b => { b.items=(b.items||[]).filter(i=>i!==id); });
+    db.trips.forEach(t => { t.items=(t.items||[]).filter(i=>i.clothingId!==id); });
+    saveDB(); renderClothes();
+    toast('Plagg borttaget');
+}
+
+/* ──── IMAGE / BG REMOVAL ────────────────────────────── */
+let _origData = null;
+let _imgLoaded = false;
+
+function handleFile(input) {
+    if(!input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            const cv = document.getElementById('bgCanvas');
+            const MAX = 340;
+            let w=img.width, h=img.height;
+            const r = Math.min(MAX/w, MAX/h, 1);
+            cv.width = Math.round(w*r);
+            cv.height = Math.round(h*r);
+            const ctx = cv.getContext('2d');
+            ctx.drawImage(img, 0, 0, cv.width, cv.height);
+            _origData = ctx.getImageData(0,0,cv.width,cv.height);
+            _imgLoaded = true;
+            // Auto-detect bg color
+            const [ar,ag,ab] = sampleCorners(ctx, cv.width, cv.height);
+            document.getElementById('bgColor').value = toHex(ar,ag,ab);
+            document.getElementById('uploadPrompt').style.display='none';
+            cv.style.display='block';
+            document.getElementById('bgControls').style.display='block';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function sampleCorners(ctx, w, h) {
+    const pts = [[0,0],[w-1,0],[0,h-1],[w-1,h-1],[Math.floor(w/2),0],[0,Math.floor(h/2)]];
+    let r=0,g=0,b=0;
+    pts.forEach(([x,y]) => { const d=ctx.getImageData(x,y,1,1).data; r+=d[0];g+=d[1];b+=d[2]; });
+    return [Math.round(r/pts.length),Math.round(g/pts.length),Math.round(b/pts.length)];
+}
+
+function toHex(r,g,b) { return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join(''); }
+function fromHex(hex) { return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)]; }
+
+function applyBgRemoval() {
+    if(!_origData) return;
+    const cv = document.getElementById('bgCanvas');
+    const ctx = cv.getContext('2d');
+    const thresh = parseInt(document.getElementById('bgThresh').value);
+    const [tr,tg,tb] = fromHex(document.getElementById('bgColor').value);
+    const copy = new ImageData(new Uint8ClampedArray(_origData.data), _origData.width, _origData.height);
+    const d = copy.data;
+    for(let i=0;i<d.length;i+=4) {
+        const dist = Math.sqrt((d[i]-tr)**2+(d[i+1]-tg)**2+(d[i+2]-tb)**2);
+        if(dist < thresh*2.3) d[i+3]=0;
+    }
+    ctx.putImageData(copy,0,0);
+}
+
+function resetBg() {
+    if(!_origData) return;
+    const cv=document.getElementById('bgCanvas');
+    const ctx=cv.getContext('2d');
+    ctx.putImageData(new ImageData(new Uint8ClampedArray(_origData.data),_origData.width,_origData.height),0,0);
+}
+
+function saveClothing() {
+    if(!_imgLoaded) { toast('Välj en bild först! 📸'); return; }
+    const cv = document.getElementById('bgCanvas');
+    const name = document.getElementById('newName').value.trim();
+    const cat  = document.getElementById('newCat').value;
+    const item = {
+        id:   Date.now(),
+        name: name || cat,
+        cat,
+        img:  cv.toDataURL('image/png', 0.82),
+        fav:  false,
+        wornDate: 'Aldrig',
+        wornTs:   0,
+        addedTs:  Date.now()
+    };
+    db.clothes.push(item);
+    saveDB();
+    closeModal('addClothingModal');
+    renderClothes();
+    toast(`${item.name} sparad! ✨`);
+}
+
+/* ──── CALENDAR ──────────────────────────────────────── */
+const MONTHS = ['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
+const DAYS   = ['Mån','Tis','Ons','Tor','Fre','Lör','Sön'];
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+let selDate = null;
+
+function renderCalendar() {
+    document.getElementById('calTitle').textContent = `${MONTHS[calM]} ${calY}`;
+    const grid = document.getElementById('calGrid');
+    let html = DAYS.map(d=>`<div class="cal-name">${d}</div>`).join('');
+    const first = new Date(calY,calM,1).getDay();
+    const days  = new Date(calY,calM+1,0).getDate();
+    const offset = (first===0 ? 6 : first-1);
+    for(let i=0;i<offset;i++) html+=`<div class="cal-day empty"></div>`;
+    const today = new Date();
+    for(let d=1;d<=days;d++) {
+        const key = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isToday = today.getDate()===d && today.getMonth()===calM && today.getFullYear()===calY;
+        const data = db.calendar[key];
+        let thumbs='';
+        if(data?.items?.length) {
+            data.items.slice(0,3).forEach(id=>{
+                const it=db.clothes.find(c=>c.id===id);
+                if(it) thumbs+=`<img class="cal-thumb" src="${it.img}" alt="">`;
+            });
+        }
+        html+=`<div class="cal-day${isToday?' today':''}${data?.items?.length?' has-outfit':''}" onclick="openCalDay('${key}')">
+            <div class="cal-num">${d}</div>
+            <div class="cal-thumbs">${thumbs}</div>
+        </div>`;
+    }
+    grid.innerHTML = html;
+}
+
+function changeMonth(d) {
+    calM+=d;
+    if(calM>11){calM=0;calY++;}
+    if(calM<0) {calM=11;calY--;}
+    renderCalendar();
+}
+
+function openCalDay(key) {
+    selDate = key;
+    const [y,m,d] = key.split('-');
+    document.getElementById('calDayTitle').textContent = `${parseInt(d)} ${MONTHS[parseInt(m)-1]}`;
+    const data = db.calendar[key]||{};
+    document.getElementById('calNote').value = data.note||'';
+    const sel = new Set(data.items||[]);
+    document.getElementById('calSelGrid').innerHTML = db.clothes.map(it=>
+        `<div class="sel-item${sel.has(it.id)?' selected':''}" data-id="${it.id}" onclick="this.classList.toggle('selected')">
+            <img src="${it.img}" alt="${it.name}">
+            <span>${it.name}</span>
+        </div>`
+    ).join('');
+    openModal('calDayModal');
+}
+
+function saveCalDay() {
+    const ids = [...document.querySelectorAll('#calSelGrid .sel-item.selected')].map(el=>parseInt(el.dataset.id));
+    db.calendar[selDate] = { items:ids, note:document.getElementById('calNote').value };
+    saveDB();
+    closeModal('calDayModal');
+    renderCalendar();
+    toast('Outfit sparad i kalendern 📅');
+}
+
+/* ──── SHUFFLE ───────────────────────────────────────── */
+let lastShuffle = [];
+
+function doShuffle() {
+    const cats = ['Tröja','Byxor','Skor'];
+    const extras = ['Jacka','Hoodie','Väska','Hatt'];
+    const row = document.getElementById('shuffleRow');
+    row.innerHTML='';
+    lastShuffle=[];
+    let delay=0;
+    cats.forEach(cat=>{
+        const pool = db.clothes.filter(c=>c.cat===cat);
+        if(!pool.length) return;
+        const pick = pool[Math.floor(Math.random()*pool.length)];
+        lastShuffle.push(pick.id);
+        const div=document.createElement('div');
+        div.className='shuffle-item';
+        div.innerHTML=`<img src="${pick.img}" alt="${pick.name}" style="animation-delay:${delay}s"><p>${pick.name}</p>`;
+        row.appendChild(div);
+        delay+=0.13;
+    });
+    extras.forEach(cat=>{
+        const pool=db.clothes.filter(c=>c.cat===cat);
+        if(pool.length&&Math.random()>0.45){
+            const pick=pool[Math.floor(Math.random()*pool.length)];
+            lastShuffle.push(pick.id);
+            const div=document.createElement('div');
+            div.className='shuffle-item';
+            div.innerHTML=`<img src="${pick.img}" alt="${pick.name}" style="animation-delay:${delay}s"><p>${pick.name}</p>`;
+            row.appendChild(div);
+            delay+=0.13;
+        }
+    });
+    const saveRow=document.getElementById('shuffleSaveRow');
+    if(lastShuffle.length){
+        saveRow.style.display='flex';
+        document.getElementById('shuffleDate').value=new Date().toISOString().slice(0,10);
+    } else {
+        saveRow.style.display='none';
+        row.innerHTML='<p style="color:var(--text-light);padding:20px;">Lägg till tröjor, byxor och skor för att slumpa en outfit!</p>';
+    }
+}
+
+function saveShuffledOutfit() {
+    const d=document.getElementById('shuffleDate').value;
+    if(!d){toast('Välj ett datum!');return;}
+    db.calendar[d]={items:lastShuffle,note:'Shufflad outfit ✨'};
+    saveDB();
+    toast('Outfit sparad i kalendern 🗓');
+}
+
+/* ──── MOODBOARD ─────────────────────────────────────── */
+let curBoard = null;
+
+function renderBoards() {
+    const grid=document.getElementById('boardsGrid');
+    if(!db.boards.length){
+        grid.innerHTML='<div class="empty-state"><span class="emo">🎨</span>Inga boards än. Skapa din första!</div>';
+        return;
+    }
+    grid.innerHTML=db.boards.map(b=>{
+        const items=(b.items||[]).slice(0,4).map(id=>db.clothes.find(c=>c.id===id)).filter(Boolean);
+        const thumbs=items.map(it=>`<img src="${it.img}" alt="${it.name}">`).join('');
+        return `<div class="board-card" onclick="openBoardEditor(${b.id})">
+            <div class="board-preview" style="background:${b.bg||'#FAE0EC'}">${thumbs||'<p style="padding:10px;font-size:0.75rem;color:var(--text-light);grid-column:1/-1">Tomt</p>'}</div>
+            <div class="board-info"><div class="board-name">${b.name}</div><div class="board-count">${(b.items||[]).length} plagg</div></div>
+        </div>`;
+    }).join('');
+}
+
+function createBoard() {
+    const name=document.getElementById('newBoardName').value.trim();
+    if(!name){toast('Ge boardet ett namn!');return;}
+    const b={id:Date.now(),name,items:[],bg:'#FAE0EC',pos:{}};
+    db.boards.push(b);
+    saveDB();
+    closeModal('createBoardModal');
+    openBoardEditor(b.id);
+}
+
+function openBoardEditor(id) {
+    curBoard=id;
+    const b=db.boards.find(x=>x.id===id);
+    if(!b) return;
+    document.getElementById('boardTitle').textContent=b.name;
+    document.getElementById('boardBgPicker').value=b.bg||'#FAE0EC';
+    document.getElementById('boards-overview').style.display='none';
+    const ed=document.getElementById('board-editor');
+    ed.classList.add('show');
+    renderBoardCanvas(b);
+}
+
+function renderBoardCanvas(b) {
+    const cv=document.getElementById('boardCanvas');
+    cv.style.background=b.bg||'#FAE0EC';
+    cv.innerHTML='';
+    (b.items||[]).forEach((id,idx)=>{
+        const it=db.clothes.find(c=>c.id===id);
+        if(!it) return;
+        const pos=(b.pos||{})[id]||{x:20+(idx%3)*130,y:20+Math.floor(idx/3)*150};
+        const img=document.createElement('img');
+        img.src=it.img;
+        img.alt=it.name;
+        img.style.cssText=`left:${pos.x}px;top:${pos.y}px;width:115px;height:115px;object-fit:contain;`;
+        makeDraggable(img,id,b);
+        const del=document.createElement('button');
+        del.className='board-item-del';
+        del.textContent='✕';
+        del.style.cssText=`left:${pos.x+90}px;top:${pos.y-8}px;`;
+        del.onclick=()=>removeFromBoard(id);
+        cv.appendChild(img);
+        cv.appendChild(del);
+    });
+    cv.style.minHeight='340px';
+}
+
+function makeDraggable(el,itemId,b) {
+    let sx,sy,sleft,stop;
+    const start=(cx,cy)=>{sx=cx;sy=cy;sleft=parseInt(el.style.left)||0;stop=parseInt(el.style.top)||0;};
+    const move=(cx,cy)=>{
+        el.style.left=(sleft+cx-sx)+'px';
+        el.style.top =(stop+cy-sy)+'px';
+    };
+    const end=()=>{
+        if(!b.pos) b.pos={};
+        b.pos[itemId]={x:parseInt(el.style.left),y:parseInt(el.style.top)};
+    };
+    el.onmousedown=e=>{
+        e.preventDefault();
+        start(e.clientX,e.clientY);
+        const mm=e2=>move(e2.clientX,e2.clientY);
+        const mu=()=>{end();document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);};
+        document.addEventListener('mousemove',mm);
+        document.addEventListener('mouseup',mu);
+    };
+    el.ontouchstart=e=>{
+        const t=e.touches[0];
+        start(t.clientX,t.clientY);
+        const tm=e2=>{const t2=e2.touches[0];move(t2.clientX,t2.clientY);};
+        const te=()=>{end();el.removeEventListener('touchmove',tm);el.removeEventListener('touchend',te);};
+        el.addEventListener('touchmove',tm,{passive:true});
+        el.addEventListener('touchend',te);
+    };
+}
+
+function removeFromBoard(itemId) {
+    const b=db.boards.find(x=>x.id===curBoard);
+    if(!b) return;
+    b.items=(b.items||[]).filter(id=>id!==itemId);
+    if(b.pos) delete b.pos[itemId];
+    renderBoardCanvas(b);
+}
+
+function updateBoardBg(color) {
+    const b=db.boards.find(x=>x.id===curBoard);
+    if(b){b.bg=color;document.getElementById('boardCanvas').style.background=color;}
+}
+
+function openAddToBoardModal() {
+    const b=db.boards.find(x=>x.id===curBoard);
+    const ex=new Set(b?.items||[]);
+    document.getElementById('boardSelGrid').innerHTML=db.clothes.map(it=>
+        `<div class="sel-item${ex.has(it.id)?' selected':''}" data-id="${it.id}" onclick="this.classList.toggle('selected')">
+            <img src="${it.img}" alt="${it.name}"><span>${it.name}</span>
+        </div>`
+    ).join('');
+    openModal('addToBoardModal');
+}
+
+function addItemsToBoard() {
+    const b=db.boards.find(x=>x.id===curBoard);
+    if(!b) return;
+    const sel=[...document.querySelectorAll('#boardSelGrid .sel-item.selected')].map(el=>parseInt(el.dataset.id));
+    b.items=[...new Set([...(b.items||[]),...sel])];
+    saveDB();
+    closeModal('addToBoardModal');
+    renderBoardCanvas(b);
+    toast('Plagg tillagda på boardet 🎨');
+}
+
+function saveBoard() { saveDB(); toast('Board sparad ✓'); }
+
+function closeBoardEditor() {
+    document.getElementById('boards-overview').style.display='block';
+    document.getElementById('board-editor').classList.remove('show');
+    curBoard=null;
+    renderBoards();
+}
+
+function downloadBoard() {
+    // Uses html2canvas if available, otherwise notify
+    if(typeof html2canvas==='undefined'){
+        toast('Ladda ner kräver html2canvas. Se README. 📄');
+        return;
+    }
+    html2canvas(document.getElementById('boardCanvas')).then(cv=>{
+        const a=document.createElement('a');
+        a.download='moodboard.png';
+        a.href=cv.toDataURL();
+        a.click();
+    });
+}
+
+/* ──── PACK LIST ─────────────────────────────────────── */
+let curTrip=null;
+
+function renderTrips() {
+    const el=document.getElementById('tripsList');
+    if(!db.trips.length){
+        el.innerHTML='<div class="empty-state"><span class="emo">🧳</span>Inga resor än. Lägg till din första!</div>';
+        return;
+    }
+    el.innerHTML=db.trips.map(t=>{
+        const total=(t.items||[]).length;
+        const packed=(t.items||[]).filter(i=>i.packed).length;
+        const pct=total>0?Math.round(packed/total*100):0;
+        return `<div class="trip-card" onclick="openTripEditor(${t.id})">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="trip-name">✈️ ${t.dest}</div>
+                <button onclick="event.stopPropagation();deleteTrip(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1rem;" title="Ta bort">✕</button>
+            </div>
+            <div class="trip-dates">${t.from||''}${t.from&&t.to?' → ':''}${t.to||''}</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:0.72rem;color:var(--text-light);margin-top:3px;">${packed} / ${total} packade</div>
+        </div>`;
+    }).join('');
+}
+
+function createTrip() {
+    const dest=document.getElementById('newTripDest').value.trim();
+    if(!dest){toast('Ange en destination!');return;}
+    const t={id:Date.now(),dest,from:document.getElementById('newTripFrom').value,to:document.getElementById('newTripTo').value,items:[]};
+    db.trips.push(t);
+    saveDB();
+    closeModal('createTripModal');
+    renderTrips();
+    openTripEditor(t.id);
+}
+
+function deleteTrip(id) {
+    if(!confirm('Ta bort denna resa?')) return;
+    db.trips=db.trips.filter(t=>t.id!==id);
+    saveDB();
+    renderTrips();
+}
+
+function openTripEditor(id) {
+    curTrip=id;
+    const t=db.trips.find(x=>x.id===id);
+    if(!t) return;
+    document.getElementById('tripTitle').textContent=t.dest;
+    document.getElementById('trips-overview').style.display='none';
+    document.getElementById('trip-editor').style.display='block';
+    renderPackItems(t);
+}
+
+function renderPackItems(t) {
+    const el=document.getElementById('packItemsContainer');
+    if(!t.items||!t.items.length){
+        el.innerHTML='<div class="empty-state"><span class="emo">🧦</span>Inga kläder tillagda. Tryck på "+ Lägg till"!</div>';
+        return;
+    }
+    el.innerHTML=t.items.map((pi,idx)=>{
+        const it=db.clothes.find(c=>c.id===pi.clothingId);
+        if(!it) return '';
+        return `<div class="pack-item${pi.packed?' opacity':''}">
+            <input type="checkbox" class="pack-check" ${pi.packed?'checked':''} onchange="togglePacked(${idx})">
+            <img src="${it.img}" alt="${it.name}">
+            <span class="pack-item-name" style="${pi.packed?'text-decoration:line-through;opacity:0.5':''}">${it.name}</span>
+            <button class="pack-remove" onclick="removePacked(${idx})">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function togglePacked(idx) {
+    const t=db.trips.find(x=>x.id===curTrip);
+    if(t&&t.items[idx]){t.items[idx].packed=!t.items[idx].packed;saveDB();renderPackItems(t);renderTrips();}
+}
+
+function removePacked(idx) {
+    const t=db.trips.find(x=>x.id===curTrip);
+    if(t){t.items.splice(idx,1);saveDB();renderPackItems(t);}
+}
+
+function openAddToPackModal() {
+    const t=db.trips.find(x=>x.id===curTrip);
+    const ex=new Set((t?.items||[]).map(i=>i.clothingId));
+    document.getElementById('packSelGrid').innerHTML=db.clothes.map(it=>
+        `<div class="sel-item${ex.has(it.id)?' selected':''}" data-id="${it.id}" onclick="this.classList.toggle('selected')">
+            <img src="${it.img}" alt="${it.name}"><span>${it.name}</span>
+        </div>`
+    ).join('');
+    openModal('addToPackModal');
+}
+
+function addItemsToPack() {
+    const t=db.trips.find(x=>x.id===curTrip);
+    if(!t) return;
+    const sel=[...document.querySelectorAll('#packSelGrid .sel-item.selected')].map(el=>parseInt(el.dataset.id));
+    const ex=new Set((t.items||[]).map(i=>i.clothingId));
+    sel.forEach(id=>{ if(!ex.has(id)) t.items.push({clothingId:id,packed:false}); });
+    saveDB();
+    closeModal('addToPackModal');
+    renderPackItems(t);
+    toast('Kläder tillagda i packlistan 🧳');
+}
+
+function closeTripEditor() {
+    document.getElementById('trips-overview').style.display='block';
+    document.getElementById('trip-editor').style.display='none';
+    curTrip=null;
+    renderTrips();
+}
+
+/* ──── INIT ──────────────────────────────────────────── */
+loadDB();
+renderClothes();
+
+// Close overlays on backdrop click
+document.querySelectorAll('.overlay').forEach(o=>{
+    o.addEventListener('click',e=>{ if(e.target===o) o.classList.add('hidden'); });
+});
+</script>
+</body>
+</html>
