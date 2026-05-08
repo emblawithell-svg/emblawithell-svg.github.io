@@ -21,7 +21,7 @@
             --text-light: #AA80A0;
             --border:     rgba(180,120,150,0.22);
             --shadow:     rgba(80,30,60,0.10);
-            --white:      #FFFFFF;
+            --white:      #ffffff;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -60,31 +60,17 @@
                 linear-gradient(160deg, #F0C8A8 0%, #DCA880 30%, #C49060 60%, #B07840 100%);
         }
 
-        /* Raised door panels */
         .door::after {
             content: '';
             position: absolute;
-            inset: 18px;
-            border: 2px solid rgba(255,255,255,0.28);
-            border-radius: 3px;
-            box-shadow:
-                inset 0 0 0 16px rgba(255,255,255,0.05),
-                inset 0 2px 8px rgba(0,0,0,0.12),
-                0 1px 0 rgba(255,255,255,0.18);
+            inset: 24px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-radius: 2px;
+            box-shadow: inset 0 0 0 14px rgba(255,255,255,0.06);
         }
 
         .door-left  { transform-origin: left center;  border-right: 5px solid var(--gold); }
         .door-right { transform-origin: right center; border-left: 5px solid var(--gold); }
-
-        /* Extra inner panel line */
-        .door-panel {
-            position: absolute;
-            inset: 36px;
-            border: 1px solid rgba(255,255,255,0.16);
-            border-radius: 2px;
-            pointer-events: none;
-            z-index: 1;
-        }
 
         .door-knob {
             position: absolute;
@@ -92,65 +78,21 @@
             background: linear-gradient(135deg, #F0D080, #C0A040);
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 3;
+            z-index: 2;
         }
 
         .door-left  .door-knob { right: 22px; }
         .door-right .door-knob { left: 22px; }
 
-        /* Hanging sign on left door */
-        .door-sign {
+        .entrance-label {
             position: absolute;
-            top: 28%;
-            left: 50%; transform: translateX(-50%);
-            z-index: 3;
-            display: flex; flex-direction: column; align-items: center;
-            animation: swing 3s ease-in-out infinite;
-            transform-origin: top center;
-        }
-
-        /* String */
-        .door-sign::before {
-            content: '';
-            display: block;
-            width: 2px; height: 22px;
-            background: linear-gradient(to bottom, #C0A040, #A08030);
-            margin-bottom: 0;
-        }
-
-        .sign-body {
-            background: linear-gradient(160deg, #FFF5E0, #F0DFB0);
-            border: 2px solid #C0A040;
-            border-radius: 6px;
-            padding: 10px 18px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
-            text-align: center;
-            min-width: 130px;
-        }
-
-        .sign-body span {
-            display: block;
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-size: 1.05rem;
-            letter-spacing: 0.08em;
-            color: #6B4010;
-            line-height: 1.4;
-        }
-
-        .sign-body small {
-            display: block;
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: #A08040;
-            margin-top: 3px;
-        }
-
-        @keyframes swing {
-            0%,100% { transform: translateX(-50%) rotate(-2deg); }
-            50%      { transform: translateX(-50%) rotate(2deg); }
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            color: rgba(255,255,255,0.6);
+            bottom: 38%;
+            z-index: 2;
         }
 
         #entrance.open .door-left  { transform: rotateY(-118deg); }
@@ -492,8 +434,10 @@
             border-radius: 8px;
             user-select: none;
             -webkit-user-drag: none;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transition: box-shadow 0.15s;
         }
+        .board-canvas img:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.2); }
 
         .board-item-del {
             position: absolute;
@@ -501,11 +445,10 @@
             background: rgba(200,80,100,0.9); color: #fff;
             border: none; border-radius: 50%;
             font-size: 0.65rem; cursor: pointer;
-            display: none; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             z-index: 10; transition: background 0.2s;
         }
         .board-item-del:hover { background: rgba(180,50,70,1); }
-        .board-canvas [data-item-key].selected .board-item-del { display: flex; }
 
         /* ─── PACK LIST ──────────────────────────────────── */
         .trips-col { display: flex; flex-direction: column; gap: 11px; }
@@ -675,54 +618,6 @@
         }
         .empty-state .emo { font-size: 2.5rem; display: block; margin-bottom: 10px; }
 
-        /* ─── PROVRUM ────────────────────────────────────── */
-        #dollStage {
-            position: relative; overflow: hidden;
-            border-radius: 16px; border: 2px dashed var(--border);
-            background: var(--blush);
-            min-height: 420px;
-            margin-bottom: 12px;
-        }
-        #dollStage img.doll-bg {
-            display: block; width: 100%; max-height: 600px;
-            object-fit: contain; pointer-events: none;
-        }
-        #dollStage .doll-item {
-            position: absolute; cursor: move;
-            user-select: none; -webkit-user-drag: none;
-            touch-action: none;
-        }
-        #dollStage .doll-item img {
-            width: 100%; height: 100%;
-            object-fit: contain; display: block;
-            pointer-events: none;
-        }
-        #dollStage .doll-item.selected { outline: 2.5px solid var(--rose); border-radius: 4px; }
-        #dollStage .doll-item img { filter: drop-shadow(0 3px 7px rgba(0,0,0,0.18)); }
-        #dollStage .doll-del {
-            position: absolute; top: -10px; right: -10px;
-            width: 22px; height: 22px;
-            background: rgba(200,80,100,0.9); color: #fff;
-            border: none; border-radius: 50%; font-size: 0.65rem;
-            cursor: pointer; display: none; align-items: center; justify-content: center;
-        }
-        #dollStage .doll-item.selected .doll-del { display: flex; }
-        #dollControls {
-            display: none; background: var(--blush);
-            border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;
-        }
-        .doll-items-row {
-            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
-        }
-        .doll-pick {
-            width: 64px; height: 64px; border-radius: 10px;
-            border: 2px solid var(--border); background: var(--white);
-            cursor: pointer; overflow: hidden; flex-shrink: 0;
-            transition: border-color 0.18s;
-        }
-        .doll-pick:hover { border-color: var(--rose); }
-        .doll-pick img { width: 100%; height: 100%; object-fit: contain; }
-
         /* ─── LASSO ──────────────────────────────────────── */
         .bg-mode-tabs { display:flex; gap:5px; margin-bottom:10px; }
         .bg-mode-tab {
@@ -753,17 +648,10 @@
 <!-- ══ WARDROBE ENTRANCE ══════════════════════════════ -->
 <div id="entrance" onclick="openWardrobe()">
     <div class="door door-left">
-        <div class="door-panel"></div>
         <div class="door-knob"></div>
-        <div class="door-sign">
-            <div class="sign-body">
-                <span>Öppna</span>
-                <small>tryck för att gå in</small>
-            </div>
-        </div>
+        <span class="entrance-label">Tryck för att öppna</span>
     </div>
     <div class="door door-right">
-        <div class="door-panel"></div>
         <div class="door-knob"></div>
     </div>
 </div>
@@ -783,7 +671,6 @@
         <button class="nav-btn"        onclick="showSection('moodboard')"><span>🎨</span>Moodboard</button>
         <button class="nav-btn"        onclick="showSection('packlist')"><span>🧳</span>Packlista</button>
         <button class="nav-btn"        onclick="showSection('wishlist')"><span>⭐</span>Önskelista</button>
-        <button class="nav-btn"        onclick="showSection('doll')"><span>🪞</span>Provrum</button>
     </nav>
 
     <!-- ── KLÄDER ──────────────────────────────────── -->
@@ -846,9 +733,6 @@
                 <label style="text-transform:none;margin:0;font-size:0.82rem;">Bakgrund:</label>
                 <input type="color" id="boardBgPicker" value="#FAE0EC" oninput="updateBoardBg(this.value)"
                     style="width:40px;height:34px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px;">
-                <button class="btn-secondary" onclick="document.getElementById('boardBgImgInput').click()" style="font-size:0.78rem;padding:8px 14px;">Bakgrundsbild</button>
-                <input type="file" id="boardBgImgInput" accept="image/*" style="display:none" onchange="setBoardBgImage(this)">
-                <button id="boardBgClearBtn" class="btn-secondary" onclick="clearBoardBgImage()" style="font-size:0.78rem;padding:8px 14px;display:none;">✕ Ta bort bild</button>
                 <button class="btn-secondary" onclick="openAddToBoardModal()" style="font-size:0.78rem;padding:8px 14px;">+ Lägg till plagg</button>
                 <button class="btn-secondary" onclick="document.getElementById('boardImgInput').click()" style="font-size:0.78rem;padding:8px 14px;">📷 Ladda upp bild</button>
                 <input type="file" id="boardImgInput" accept="image/*" style="display:none" onchange="addBoardImage(this)">
@@ -898,41 +782,6 @@
             <button class="btn-primary" onclick="openWishModal()">+ Lägg till</button>
         </div>
         <div id="wishGrid" class="clothes-grid"></div>
-    </section>
-    <!-- ── PROVRUM ────────────────────────────────────── -->
-    <section id="doll" class="section">
-        <div class="section-hdr">
-            <h2>Provrum</h2>
-            <div style="display:flex;gap:8px;">
-                <button class="btn-secondary" onclick="document.getElementById('dollPhotoInput').click()" style="font-size:0.78rem;padding:8px 14px;">📷 Lägg till foto</button>
-                <input type="file" id="dollPhotoInput" accept="image/*" style="display:none" onchange="loadDollPhoto(this)">
-                <button class="btn-secondary" onclick="clearDollStage()" style="font-size:0.78rem;padding:8px 14px;">Rensa</button>
-            </div>
-        </div>
-
-        <!-- Selected item controls -->
-        <div id="dollControls">
-            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-                <span style="font-size:0.75rem;font-weight:800;color:var(--text-mid);">Markerat plagg:</span>
-                <label style="text-transform:none;margin:0;font-size:0.78rem;">Storlek</label>
-                <input type="range" id="dollSize" min="30" max="500" value="140" oninput="applyDollTransform()" style="flex:1;min-width:80px;">
-                <label style="text-transform:none;margin:0;font-size:0.78rem;">Rotera</label>
-                <input type="range" id="dollRot" min="-180" max="180" value="0" oninput="applyDollTransform()" style="flex:1;min-width:80px;">
-                <button class="btn-secondary" onclick="deselectDollItem()" style="font-size:0.72rem;padding:5px 10px;">Avmarkera</button>
-            </div>
-        </div>
-
-        <!-- Stage -->
-        <div id="dollStage">
-            <div id="dollEmpty" class="empty-state" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                <span class="emo">🪞</span>
-                <p>Lägg till ett foto av dig själv för att börja</p>
-            </div>
-        </div>
-
-        <!-- Clothes picker -->
-        <p style="font-size:0.78rem;font-weight:800;color:var(--text-mid);letter-spacing:0.1em;text-transform:uppercase;margin:10px 0 6px;">Dina kläder — klicka för att lägga på</p>
-        <div class="doll-items-row" id="dollPicker"></div>
     </section>
 
 </div><!-- /#app -->
@@ -1025,7 +874,7 @@
             </div>
             <!-- Lasso-panel -->
             <div id="lassoPanel" style="display:none;">
-                <p style="font-size:0.78rem;color:var(--text-mid);margin-bottom:8px;">Håll nere och dra runt klädesplagget. Släpp för att avsluta.</p>
+                <p style="font-size:0.78rem;color:var(--text-mid);margin-bottom:8px;">Klicka runt klädesplagget för att rita en outline. Dubbelklicka för att avsluta.</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button class="btn-primary"   onclick="applyLasso()"  style="font-size:0.78rem;padding:8px 14px;">Applicera outline</button>
                     <button class="btn-secondary" onclick="clearLasso()"  style="font-size:0.78rem;padding:8px 14px;">Rensa</button>
@@ -1035,8 +884,13 @@
         </div>
 
         <div class="form-grp">
-            <label>Kategori ✦</label>
-            <select id="newCat" onchange="onCatChange(this)" style="border-color:var(--rose);font-weight:700;">
+            <label>Namn</label>
+            <input type="text" id="newName" placeholder="t.ex. Blå stickad tröja">
+        </div>
+
+        <div class="form-grp">
+            <label>Kategori</label>
+            <select id="newCat" onchange="onCatChange(this)">
                 <option value="Tröja">Tröja</option>
                 <option value="Byxor">Byxor</option>
                 <option value="Klänning">Klänning</option>
@@ -1051,11 +905,6 @@
             </select>
             <input type="text" id="customCatInput" placeholder="Skriv kategorinamn…"
                 style="display:none;margin-top:6px;" oninput="validateCustomCat(this)">
-        </div>
-
-        <div class="form-grp">
-            <label>Namn</label>
-            <input type="text" id="newName" placeholder="t.ex. Blå stickad tröja">
         </div>
 
         <button class="btn-primary" onclick="saveClothing()" style="width:100%;">Spara plagg ✨</button>
@@ -1127,41 +976,6 @@
     </div>
 </div>
 
-<!-- Item action menu -->
-<div id="itemMenuModal" class="overlay hidden">
-    <div class="modal" style="max-width:320px;">
-        <button class="close-btn" onclick="closeModal('itemMenuModal')">✕</button>
-        <div class="modal-title" id="itemMenuTitle">Plagg</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
-            <button class="btn-primary"   onclick="itemMenuWorn()"  style="width:100%;text-align:left;padding:13px 16px;">👗 Markera som använd idag</button>
-            <button class="btn-secondary" onclick="itemMenuEdit()"  style="width:100%;text-align:left;padding:13px 16px;">✏️ Ändra namn, kategori eller bild</button>
-        </div>
-    </div>
-</div>
-
-<!-- Edit clothing item -->
-<div id="editItemModal" class="overlay hidden">
-    <div class="modal" style="max-width:420px;">
-        <button class="close-btn" onclick="closeModal('editItemModal')">✕</button>
-        <div class="modal-title">Ändra plagg</div>
-        <div class="form-grp" style="text-align:center;">
-            <img id="editImgPreview" style="width:120px;height:120px;object-fit:contain;border-radius:12px;background:var(--blush);margin-bottom:8px;">
-            <br>
-            <button class="btn-secondary" onclick="openReplaceImg()" style="font-size:0.78rem;padding:7px 14px;">Byt bild</button>
-            <input type="file" id="editFileInput" accept="image/*" style="display:none" onchange="previewEditImg(this)">
-        </div>
-        <div class="form-grp">
-            <label>Kategori ✦</label>
-            <select id="editCat" style="border-color:var(--rose);font-weight:700;"></select>
-        </div>
-        <div class="form-grp">
-            <label>Namn</label>
-            <input type="text" id="editName">
-        </div>
-        <button class="btn-primary" onclick="saveEdit()" style="width:100%;">Spara ändringar</button>
-    </div>
-</div>
-
 <!-- Toast -->
 <div id="toast"></div>
 
@@ -1199,7 +1013,7 @@ function openWardrobe() {
 }
 
 /* ──── NAV ───────────────────────────────────────────── */
-const SECTIONS = ['clothes','calendar','shuffle','moodboard','packlist','wishlist','doll'];
+const SECTIONS = ['clothes','calendar','shuffle','moodboard','packlist','wishlist'];
 function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', SECTIONS[i]===id));
@@ -1209,7 +1023,6 @@ function showSection(id) {
     if(id==='moodboard') renderBoards();
     if(id==='packlist')  renderTrips();
     if(id==='wishlist')  renderWishlist();
-    if(id==='doll')      renderDollPicker();
 }
 
 /* ──── CLOTHES ───────────────────────────────────────── */
@@ -1249,7 +1062,7 @@ function renderClothes() {
         html += `<div class="clothing-card">
             <button class="card-delete btn-icon" onclick="deleteItem(${item.id})" title="Ta bort">✕</button>
             <button class="fav-btn" onclick="toggleFav(${item.id})">${item.fav?'❤️':'🤍'}</button>
-            <img src="${item.img}" alt="${item.name}" loading="lazy" onclick="openItemMenu(${item.id})" style="cursor:pointer;">
+            <img src="${item.img}" alt="${item.name}" loading="lazy" onclick="markWorn(${item.id})">
             <div class="card-name">${item.name}</div>
             <span class="card-badge">${item.cat}</span>
             <div class="card-worn">Sist: ${worn}</div>
@@ -1295,75 +1108,12 @@ function openAddModal() {
     document.getElementById('newCat').value='Tröja';
     _origData=null; _imgLoaded=false;
     setBgMode('color');
-    _replaceImgId = null;
-    document.getElementById('addClothingModal').querySelector('.modal-title').textContent = 'Lägg till plagg';
     openModal('addClothingModal');
 }
 
 function toggleFav(id) {
     const it = db.clothes.find(c=>c.id===id);
     if(it) { it.fav=!it.fav; saveDB(); renderClothes(); }
-}
-
-let _menuItemId  = null;
-let _editNewImg  = null;
-let _replaceImgId = null; // set when add-modal is opened to replace an existing item's image
-
-function openItemMenu(id) {
-    _menuItemId = id;
-    const it = db.clothes.find(c=>c.id===id);
-    if(!it) return;
-    document.getElementById('itemMenuTitle').textContent = it.name;
-    openModal('itemMenuModal');
-}
-
-function itemMenuWorn() {
-    closeModal('itemMenuModal');
-    markWorn(_menuItemId);
-}
-
-function itemMenuEdit() {
-    closeModal('itemMenuModal');
-    const it = db.clothes.find(c=>c.id===_menuItemId);
-    if(!it) return;
-    _editNewImg = null;
-    document.getElementById('editImgPreview').src = it.img;
-    document.getElementById('editName').value = it.name;
-    const sel = document.getElementById('editCat');
-    sel.innerHTML = getAllCats().filter(c=>c!=='Alla').map(c=>
-        `<option value="${c}"${c===it.cat?' selected':''}>${c}</option>`
-    ).join('');
-    openModal('editItemModal');
-}
-
-function openReplaceImg() {
-    _replaceImgId = _menuItemId;
-    closeModal('editItemModal');
-    openAddModal();
-    // Hide name/cat fields — user is only replacing the image
-    document.getElementById('addClothingModal').querySelector('.modal-title').textContent = 'Byt bild';
-}
-
-function previewEditImg(input) {
-    if(!input.files[0]) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        _editNewImg = e.target.result;
-        document.getElementById('editImgPreview').src = _editNewImg;
-    };
-    reader.readAsDataURL(input.files[0]);
-}
-
-function saveEdit() {
-    const it = db.clothes.find(c=>c.id===_menuItemId);
-    if(!it) return;
-    it.name = document.getElementById('editName').value.trim() || it.name;
-    it.cat  = document.getElementById('editCat').value;
-    if(_editNewImg) it.img = _editNewImg;
-    saveDB();
-    closeModal('editItemModal');
-    renderClothes();
-    toast('Plagg uppdaterat ✓');
 }
 
 function markWorn(id) {
@@ -1403,7 +1153,7 @@ function handleFile(input) {
         const img = new Image();
         img.onload = () => {
             const cv = document.getElementById('bgCanvas');
-            const MAX = 900;
+            const MAX = 340;
             let w=img.width, h=img.height;
             const r = Math.min(MAX/w, MAX/h, 1);
             cv.width = Math.round(w*r);
@@ -1442,7 +1192,7 @@ function setBgMode(mode) {
     else clearLasso();
 }
 
-/* ── Lasso drawing — freehand drag ── */
+/* ── Lasso drawing ── */
 function initLassoCanvas() {
     const lc = document.getElementById('lassoCanvas');
     const cv = document.getElementById('bgCanvas');
@@ -1450,80 +1200,20 @@ function initLassoCanvas() {
     _lassoPts=[]; _lassoOpen=false;
     drawLasso();
 
-    function getPos(e) {
+    lc.onclick = e => {
+        if(_lassoOpen) return;
         const rect = lc.getBoundingClientRect();
         const scaleX = lc.width / rect.width;
         const scaleY = lc.height / rect.height;
-        const src = e.touches ? e.touches[0] : e;
-        return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
-    }
-
-    let drawing = false;
-
-    function onStart(e) {
-        e.preventDefault();
-        if(_lassoOpen) return;
-        drawing = true;
-        _lassoPts = [];
-        const [x,y] = getPos(e);
-        _lassoPts.push([x,y]);
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top)  * scaleY;
+        _lassoPts.push([x, y]);
         drawLasso();
-    }
-    function onMove(e) {
-        e.preventDefault();
-        if(!drawing || _lassoOpen) return;
-        const [x,y] = getPos(e);
-        // Throttle: only add point if moved enough
-        const last = _lassoPts[_lassoPts.length-1];
-        if(Math.hypot(x-last[0], y-last[1]) > 4) {
-            _lassoPts.push([x,y]);
-            drawLasso();
-        }
-    }
-    function onEnd(e) {
-        if(!drawing) return;
-        drawing = false;
-        if(_lassoPts.length >= 6) {
-            _lassoOpen = true;
-            drawLasso();
-            toast('Outline klar! Tryck "Applicera outline".');
-        } else {
-            _lassoPts = [];
-            drawLasso();
-            toast('Rita runt plagget, håll nere och dra.');
-        }
-    }
+    };
 
-    lc.onmousedown  = onStart;
-    lc.onmousemove  = onMove;
-    lc.onmouseup    = onEnd;
-    lc.ontouchstart = onStart;
-    lc.ontouchmove  = onMove;
-    lc.ontouchend   = onEnd;
-}
-
-/* ── Autocrop: trim transparent border ── */
-function autocrop() {
-    const cv = document.getElementById('bgCanvas');
-    const ctx = cv.getContext('2d');
-    const d = ctx.getImageData(0,0,cv.width,cv.height).data;
-    let minX=cv.width,minY=cv.height,maxX=0,maxY=0;
-    for(let y=0;y<cv.height;y++) for(let x=0;x<cv.width;x++) {
-        if(d[(y*cv.width+x)*4+3]>10) {
-            if(x<minX)minX=x; if(x>maxX)maxX=x;
-            if(y<minY)minY=y; if(y>maxY)maxY=y;
-        }
-    }
-    if(maxX<=minX||maxY<=minY) return;
-    const pad=8;
-    minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad);
-    maxX=Math.min(cv.width-1,maxX+pad); maxY=Math.min(cv.height-1,maxY+pad);
-    const cropped = ctx.getImageData(minX,minY,maxX-minX+1,maxY-minY+1);
-    cv.width=cropped.width; cv.height=cropped.height;
-    ctx.putImageData(cropped,0,0);
-    // Update lasso canvas size too
-    const lc=document.getElementById('lassoCanvas');
-    lc.width=cv.width; lc.height=cv.height;
+    lc.ondblclick = e => {
+        if(_lassoPts.length >= 3) { _lassoOpen=true; drawLasso(); toast('Outline klar! Tryck "Applicera outline".'); }
+    };
 }
 
 function drawLasso() {
@@ -1557,21 +1247,20 @@ function clearLasso() {
 
 function applyLasso() {
     if(_lassoPts.length < 3) { toast('Rita minst 3 punkter först!'); return; }
-    const pts = [..._lassoPts]; // save before resetBg clears them
     const cv=document.getElementById('bgCanvas');
     const ctx=cv.getContext('2d');
     resetBg();
+    // Clip to polygon — everything OUTSIDE goes transparent
     const data = ctx.getImageData(0,0,cv.width,cv.height);
     const d = data.data;
     for(let y=0;y<cv.height;y++) {
         for(let x=0;x<cv.width;x++) {
-            if(!pointInPoly(x,y,pts)) {
+            if(!pointInPoly(x,y,_lassoPts)) {
                 d[(y*cv.width+x)*4+3] = 0;
             }
         }
     }
     ctx.putImageData(data,0,0);
-    autocrop();
     toast('Bakgrund borttagen! ✨');
 }
 
@@ -1608,40 +1297,18 @@ function applyBgRemoval() {
         if(dist < thresh*2.3) d[i+3]=0;
     }
     ctx.putImageData(copy,0,0);
-    autocrop();
 }
 
 function resetBg() {
     if(!_origData) return;
     const cv=document.getElementById('bgCanvas');
     const ctx=cv.getContext('2d');
-    cv.width=_origData.width; cv.height=_origData.height;
     ctx.putImageData(new ImageData(new Uint8ClampedArray(_origData.data),_origData.width,_origData.height),0,0);
-    const lc=document.getElementById('lassoCanvas');
-    lc.width=cv.width; lc.height=cv.height;
-    clearLasso();
 }
 
 function saveClothing() {
     if(!_imgLoaded) { toast('Välj en bild först! 📸'); return; }
     const cv = document.getElementById('bgCanvas');
-    const newImg = cv.toDataURL('image/png', 0.95);
-
-    // Replace-image mode: update existing item, go back to edit modal
-    if(_replaceImgId) {
-        const it = db.clothes.find(c=>c.id===_replaceImgId);
-        if(it) {
-            it.img = newImg;
-            saveDB();
-            renderClothes();
-            toast('Bild uppdaterad ✓');
-        }
-        _replaceImgId = null;
-        closeModal('addClothingModal');
-        document.getElementById('addClothingModal').querySelector('.modal-title').textContent = 'Lägg till plagg';
-        return;
-    }
-
     const name = document.getElementById('newName').value.trim();
     let cat = document.getElementById('newCat').value;
     if(cat === '__custom__') {
@@ -1654,7 +1321,7 @@ function saveClothing() {
         id:   Date.now(),
         name: name || cat,
         cat,
-        img:  newImg,
+        img:  cv.toDataURL('image/png', 0.82),
         fav:  false,
         wornDate: 'Aldrig',
         wornTs:   0,
@@ -1831,7 +1498,6 @@ function openBoardEditor(id) {
     if(!b) return;
     document.getElementById('boardTitle').textContent=b.name;
     document.getElementById('boardBgPicker').value=b.bg||'#FAE0EC';
-    document.getElementById('boardBgClearBtn').style.display=b.bgImg?'block':'none';
     document.getElementById('boards-overview').style.display='none';
     const ed=document.getElementById('board-editor');
     ed.classList.add('show');
@@ -1842,17 +1508,7 @@ let selBoardItemId = null;
 
 function renderBoardCanvas(b) {
     const cv=document.getElementById('boardCanvas');
-    if(b.bgImg) {
-        cv.style.backgroundImage=`url(${b.bgImg})`;
-        cv.style.backgroundSize='cover';
-        cv.style.backgroundPosition='center';
-        cv.style.backgroundColor='';
-        document.getElementById('boardBgClearBtn').style.display='block';
-    } else {
-        cv.style.backgroundImage='';
-        cv.style.background=b.bg||'#FAE0EC';
-        document.getElementById('boardBgClearBtn').style.display='none';
-    }
+    cv.style.background=b.bg||'#FAE0EC';
     cv.innerHTML='';
     if(!b.extraImgs) b.extraImgs=[];
 
@@ -1867,7 +1523,7 @@ function renderBoardCanvas(b) {
         const wrap=document.createElement('div');
         wrap.dataset.itemKey=item.key;
         wrap.style.cssText=`position:absolute;left:${pos.x}px;top:${pos.y}px;width:${pos.size||115}px;height:${pos.size||115}px;cursor:move;`;
-        if(selBoardItemId===item.key) { wrap.style.outline='2.5px solid var(--rose)'; wrap.classList.add('selected'); }
+        if(selBoardItemId===item.key) wrap.style.outline='2.5px solid var(--rose)';
 
         const img=document.createElement('img');
         img.src=item.src;
@@ -1995,24 +1651,7 @@ function removeFromBoard(itemId) {
 
 function updateBoardBg(color) {
     const b=db.boards.find(x=>x.id===curBoard);
-    if(b){ b.bg=color; if(!b.bgImg) document.getElementById('boardCanvas').style.background=color; }
-}
-
-function setBoardBgImage(input) {
-    if(!input.files[0]) return;
-    const b=db.boards.find(x=>x.id===curBoard);
-    if(!b) return;
-    const reader=new FileReader();
-    reader.onload=e=>{ b.bgImg=e.target.result; saveDB(); renderBoardCanvas(b); };
-    reader.readAsDataURL(input.files[0]);
-    input.value='';
-}
-
-function clearBoardBgImage() {
-    const b=db.boards.find(x=>x.id===curBoard);
-    if(!b) return;
-    delete b.bgImg;
-    saveDB(); renderBoardCanvas(b);
+    if(b){b.bg=color;document.getElementById('boardCanvas').style.background=color;}
 }
 
 function openAddToBoardModal() {
@@ -2250,123 +1889,6 @@ function toggleBought(id) {
 function deleteWish(id) {
     db.wishlist = db.wishlist.filter(x=>x.id!==id);
     saveDB(); renderWishlist();
-}
-
-/* ──── PROVRUM (klippdocka) ──────────────────────────── */
-let _dollSel = null; // selected item key
-
-function loadDollPhoto(input) {
-    if(!input.files[0]) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        const stage = document.getElementById('dollStage');
-        // Remove old bg img if any
-        const old = stage.querySelector('.doll-bg');
-        if(old) old.remove();
-        document.getElementById('dollEmpty').style.display = 'none';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.className = 'doll-bg';
-        stage.insertBefore(img, stage.firstChild);
-    };
-    reader.readAsDataURL(input.files[0]);
-    input.value='';
-}
-
-function renderDollPicker() {
-    document.getElementById('dollPicker').innerHTML = db.clothes.map(it =>
-        `<div class="doll-pick" onclick="addDollItem(${it.id})" title="${it.name}">
-            <img src="${it.img}" alt="${it.name}">
-        </div>`
-    ).join('') || '<p style="font-size:0.8rem;color:var(--text-light);">Inga kläder sparade ännu.</p>';
-}
-
-function addDollItem(clothingId) {
-    const it = db.clothes.find(c=>c.id===clothingId);
-    if(!it) return;
-    const stage = document.getElementById('dollStage');
-    const key = 'doll_' + Date.now();
-    const size = 140;
-    const wrap = document.createElement('div');
-    wrap.className = 'doll-item';
-    wrap.dataset.key = key;
-    wrap.style.cssText = `left:60px;top:60px;width:${size}px;height:${size}px;`;
-
-    const img = document.createElement('img');
-    img.src = it.img; img.alt = it.name;
-
-    const del = document.createElement('button');
-    del.className = 'doll-del'; del.textContent = '✕';
-    del.onclick = e => { e.stopPropagation(); wrap.remove(); deselectDollItem(); };
-
-    wrap.appendChild(img); wrap.appendChild(del);
-    wrap.onclick = e => { if(e.target !== del) selectDollItem(wrap); };
-    makeDollDraggable(wrap);
-    stage.appendChild(wrap);
-    selectDollItem(wrap);
-}
-
-function selectDollItem(wrap) {
-    document.querySelectorAll('#dollStage .doll-item').forEach(el => el.classList.remove('selected'));
-    wrap.classList.add('selected');
-    _dollSel = wrap;
-    const size = parseInt(wrap.style.width);
-    const rot  = wrap._rot || 0;
-    document.getElementById('dollSize').value = size;
-    document.getElementById('dollRot').value  = rot;
-    document.getElementById('dollControls').style.display = 'block';
-}
-
-function deselectDollItem() {
-    if(_dollSel) _dollSel.classList.remove('selected');
-    _dollSel = null;
-    document.getElementById('dollControls').style.display = 'none';
-}
-
-function applyDollTransform() {
-    if(!_dollSel) return;
-    const size = parseInt(document.getElementById('dollSize').value);
-    const rot  = parseInt(document.getElementById('dollRot').value);
-    _dollSel.style.width  = size + 'px';
-    _dollSel.style.height = size + 'px';
-    _dollSel.style.transform = `rotate(${rot}deg)`;
-    _dollSel._rot = rot;
-}
-
-function clearDollStage() {
-    const stage = document.getElementById('dollStage');
-    [...stage.querySelectorAll('.doll-item')].forEach(el => el.remove());
-    const bg = stage.querySelector('.doll-bg');
-    if(bg) bg.remove();
-    document.getElementById('dollEmpty').style.display = 'flex';
-    deselectDollItem();
-}
-
-function makeDollDraggable(el) {
-    let sx, sy, sl, st, active=false;
-    function getPos(e) { return e.touches ? [e.touches[0].clientX, e.touches[0].clientY] : [e.clientX, e.clientY]; }
-    function start(e) {
-        if(e.target.tagName==='BUTTON') return;
-        e.preventDefault();
-        active=true;
-        [sx,sy] = getPos(e);
-        sl = parseInt(el.style.left)||0;
-        st = parseInt(el.style.top)||0;
-    }
-    function move(e) {
-        if(!active) return;
-        e.preventDefault();
-        const [cx,cy] = getPos(e);
-        el.style.left = (sl+cx-sx)+'px';
-        el.style.top  = (st+cy-sy)+'px';
-    }
-    function end() { active=false; }
-    el.addEventListener('mousedown',  start);
-    el.addEventListener('touchstart', start, {passive:false});
-    document.addEventListener('mousemove',  move);
-    document.addEventListener('touchmove',  move, {passive:false});
-    document.addEventListener('mouseup',    end);
-    document.addEventListener('touchend',   end);
 }
 
 /* ──── INIT ──────────────────────────────────────────── */
